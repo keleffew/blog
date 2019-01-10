@@ -12,6 +12,7 @@ The goal for Storj’s V3 network is to provide developers with an object storag
 
 <img src="/blog/img/audit-image-1.png" alt="The Storj test network (storj-sdk) enables you to run all the components of the Storj platform (Satellite, Uplink client, and storage nodes) and test them on your local machine." width="100%"/>
 <p style="text-align: center;">The Storj test network (storj-sdk) enables you to run all the components of the Storj platform (Satellite, Uplink client, and storage nodes) and test them on your local machine.</p>
+<br>
 
 The V3 network is designed to be compatible with existing bucket/object storage protocols (namely Amazon S3) and should be familiar for developers who have used these services in the past.
 
@@ -34,23 +35,20 @@ Before configuring the storj-sdk V3 testnet, you must have the following:
 We will begin by opening a new terminal window, cloning the storj directory from GitHub, and installing it by entering:
 
 ```
-//The folder must be outside of the GOPATH. Otherwise you will see errors.
+ $ git clone https://github.com/storj/storj.git storj
+ $ cd storj
 
-$ git clone https://github.com/storj/storj.git storj
-$ cd storj
-
-$ go install ./cmd/{storj-sdk,
-,storagenode,gateway,uplink}
+ $ go install ./cmd/{storj-sdk,storagenode,gateway,uplink}
 ```
 
-This will install the `storj-sdk` `satellite` `storage node` `gateway` and `uplink`binaries to wherever Go is configured to output binaries on your system. By default, this is ~/go/bin.
+This will install the `storj-sdk` `satellite` `storage node` `gateway` and `uplink`binaries to wherever Go is configured to output binaries on your system. By default, this is ~/go/bin.  The folder must be outside of the GOPATH. Otherwise you will see errors.
 
 Next, run the setup:
 
 ```
-$ cd ~/storj/go/bin
+ $ cd ~/storj/go/bin
 
-$ storj-sdk network setup
+ $ storj-sdk network setup
 ```
 
 You should see an output showing the generation of the identity certifications for the Satellite, as well as 10 storage nodes, and the Uplink. 
@@ -59,28 +57,30 @@ The terminal output should look like this:
 
 <img src="/blog/img/alpha-walkthrough-image-1.png" alt="As shown above, the config is generate certificates for the storage nodes. The public key of the node’s certificate authority determines its node ID (which is is the hash of the public key and acts as a proof-of-work threshold)." width="100%"/>
 <p style="text-align: center;">As shown above, the config is generate certificates for the storage nodes. The public key of the node’s certificate authority determines its node ID (which is is the hash of the public key and acts as a proof-of-work threshold).</p>
+<br>
 
 You have now configured a Storj test network with the default configuration — which generates one Satellite and 10 storage nodes. For a deeper dive into the various peer classes and their functions, review section 4.2 in the [Storj V3 white paper](storj.io/white-paper).
 
 * You might also want to take a look at the config by navigating to the root directory `--config-dir` where all the configs are specified. 
-* You can use vim to tweak the default configuration settings. You can also see what is being overwritten on the command-line level with `storj-sdk -x network run`. Just look for the lines containing “running”.
+* You can use vim to tweak the default configuration settings. You can also see what is being overwritten on the command-line level with `$ storj-sdk -x network run`. Just look for the lines containing “running”.
 
 Now that the configuration has been completed, we can fire up the test network with:
 
 ```
-$ storj-sdk network run
+ $ storj-sdk network run
 ```
 
 This will start a Satellite and connect it to the 10 local storage nodes.
 
 The function of the Satellite is to participate in the node discovery system, cache node address information, store per-object metadata, maintain storage node reputation, aggregate billing data, pay storage nodes, and perform audit and repair.
 
-A technical overview into the “audit and repair” process can be [found here](https://medium.com/@storjproject/decentralized-auditing-and-repair-the-low-key-life-of-data-resurrection-810607644d5d).
+Storage nodes can go offline, and your data remains alive, due to this self-regenerative monitoring and repair process.  A technical overview of the network's “audit and repair” process can be [found here](https://medium.com/@storjproject/decentralized-auditing-and-repair-the-low-key-life-of-data-resurrection-810607644d5d).
 
 Observe the output for the gateway generation and take note of its output. You should see something similar to what is shown below:
 
 <img src="/blog/img/alpha-walkthrough-image-2.png" alt="The ‘network run’ command will boot up the satellite and ten storage nodes." width="100%"/>
 <p style="text-align: center;">The ‘network run’ command will boot up the satellite and ten storage nodes.</p>
+<br>
 
 The test network assigns ports in the following way:
 
@@ -90,7 +90,7 @@ The test network assigns ports in the following way:
 
 ### Using the Minio Browser GUI interface
 
-To navigate to the Minio interface, copy and paste the URL for the gateway into your browser (in this case the above output, labeled “Endpoint,” shows 127.0.0.1:9000)
+To navigate to the Minio interface, copy and paste the URL for the gateway into your browser (in this case the above output, labeled `“Endpoint,”` shows `127.0.0.1:9000`)
 
 <img src="/blog/img/alpha-walkthrough-image-3.png" alt="Navigating to the Minio interface will prompt a login screen, asking for the key credentials" width="100%"/>
 <p style="text-align: center;">Navigating to the Minio interface will prompt a login screen, asking for the key credentials</p>
@@ -98,13 +98,13 @@ To navigate to the Minio interface, copy and paste the URL for the gateway into 
 By default, in the local testnetwork, the access key and secret key should look something like:
 
 ```
-Access Key: 6df732f526a47edb5088
+ `Access Key: 6df732f526a47edb5088`
 ```
 
 And
 
 ```
-Secret Key: b265c61f0fd3b9beb017
+ `Secret Key: b265c61f0fd3b9beb017`
 ```
 
 Type the access and secret keys into the prompt. You are now logged into the Minio interface. 
@@ -126,7 +126,7 @@ You can think of the Uplink as an ‘access point’ for your all of your object
 Set up your Uplink by navigating to the go/bin directory and running the following command in a new terminal window. This will configure your Uplink to communicate with the Storj Satellite bootstrapped in the storj-sdk:
 
 ```
-$ uplink setup --api-key abc123 --satellite-addr 127.0.0.1:9000 \
+ $ uplink setup --api-key abc123 --satellite-addr 127.0.0.1:9000 \
   --enc-key highlydistributedridiculouslyresilient
 ```
 
@@ -135,7 +135,7 @@ You can now run Storj CLI commands on the local network instance. In this guide,
 Let’s see if the bucket you created through the Minio GUI is still there! Run:
 
 ```
-$ uplink ls
+ $ uplink ls
 ```
 
 Next, try creating another bucket through the Uplink, and upload a file to it. We will use this object in the next section!
@@ -145,25 +145,25 @@ Here are a few commands to get started:
 **Create a bucket:**
 
 ```
-$ uplink mb sj://[bucket-name]
+ $ uplink mb sj://[bucket-name]
 ```
 
 **Upload an object:**
 
 ```
-$ uplink cp ~/Desktop/[file-name.extension] sj://[bucket-name]
+ $ uplink cp ~/Desktop/[file-name.extension] sj://[bucket-name]
 ```
 
 **List the object in the bucket:**
 
 ```
-$ uplink ls sj://[bucket-name]/
+ $ uplink ls sj://[bucket-name]/
 ```
 
 **Download the object to your machine:**
 
 ```
-$ uplink cp sj://[bucket-name]/[file-name.extension] ~/Desktop/[file-name.extension]
+ $ uplink cp sj://[bucket-name]/[file-name.extension] ~/Desktop/[file-name.extension]
 ```
 
 We can also delete the object and bucket using the command below —  but be sure
@@ -172,13 +172,13 @@ to save an object or two for the next section!
 **Delete an object:**
 
 ```
-$ uplink rm sj://bucket-name/file-name.extension
+ $ uplink rm sj://bucket-name/file-name.extension
 ```
 
 **Remove a bucket:**
 
 ```
-$ uplink rb sj://bucket-name
+ $ uplink rb sj://bucket-name
 ```
 
 And that’s it for the Uplink client! We have successfully configured the client and walked through the basic commands for interacting with the sj://bucket/object store.
@@ -190,7 +190,7 @@ Next up, we will reconfigure the AWS command line interface to communicate with 
 When we ran the command 
 
 ```
-$ storj-sdk network run
+ $ storj-sdk network run
 ```
 
 An S3 gateway was bootstrapped, and the terminal outputted a sample access and
@@ -203,7 +203,7 @@ We can also use these credentials to point the AWS command line tool toward a St
 Now, with the AWS command line installed on your machine, open up a new terminal window, and run:
 
 ```
-$ aws configure
+ $ aws configure
 ```
 
 You will be prompted for the access key and secret key generated by the gateway. Enter these into the terminal prompt, and leave the region name and output format blank. 
@@ -211,15 +211,15 @@ You will be prompted for the access key and secret key generated by the gateway.
 Here as an example using the default keys:
 
 ```
-AWS Access Key ID []: [insecure-dev-access-key]
+ `AWS Access Key ID []: [insecure-dev-access-key]`
 
-AWS Secret Access Key []: [insecure-dev-secret-key]
+ `AWS Secret Access Key []: [insecure-dev-secret-key]`
 ```
 
 We have now successfully connected to the AWS command line. Let’s try a few commands:
 
 ```
-$ aws s3 --endpoint=http://127.0.0.1:9000/ ls
+ $ aws s3 --endpoint=http://127.0.0.1:9000/ ls
 ```
 
 This will show us if we have any existing buckets in the environment (if you created buckets in the GUI/Uplink sections, these will be listed).
@@ -227,15 +227,15 @@ This will show us if we have any existing buckets in the environment (if you cre
 To make a new bucket, run:
 
 ```
-$ aws s3 --endpoint=http://127.0.0.1:9000/ mb s3://demobucket
+ $ aws s3 --endpoint=http://127.0.0.1:9000/ mb s3://demobucket
 ```
 
 Next, let’s upload a file to that bucket and generate a presigned URL to stream that file from the browser:
 
 ```
-$ aws s3 --endpoint=http://127.0.0.1:9000/ cp ~/Desktop/your-large-file.mp4 s3://bucket-name
+ $ aws s3 --endpoint=http://127.0.0.1:9000/ cp ~/Desktop/your-large-file.mp4 s3://bucket-name
 
-$ aws s3 --endpoint=http://127.0.0.1:9000/ presign s3://bucket-name/your-large-file.mp4
+ $ aws s3 --endpoint=http://127.0.0.1:9000/ presign s3://bucket-name/your-large-file.mp4
 ```
 
 This will generate a URL and will allow live video streaming from your browser (or a VLC).
